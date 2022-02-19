@@ -861,6 +861,7 @@ public class RNSendIntentModule extends ReactContextBaseJavaModule {
             Intent intent = null;
             try {
                 intent = Intent.parseUri(intentUri, Intent.URI_INTENT_SCHEME);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 if (intent != null) {
                     this.reactContext.startActivity(intent);
                 }
@@ -868,6 +869,7 @@ public class RNSendIntentModule extends ReactContextBaseJavaModule {
                 String packageName = intent.getPackage();
                 if (!packageName.equals("")) {
                     marketIntent.setData(Uri.parse("market://details?id=" + packageName));
+                    marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     this.reactContext.startActivity(marketIntent);
                 }
             } catch (Exception e) {
@@ -880,6 +882,7 @@ public class RNSendIntentModule extends ReactContextBaseJavaModule {
             String packageName = uri.getQueryParameter("id");
             if (packageName != null && !packageName.equals("")) {
                 marketIntent.setData(Uri.parse("market://details?id=" + packageName));
+                marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 this.reactContext.startActivity(marketIntent);
             }
             promise.resolve(true);
