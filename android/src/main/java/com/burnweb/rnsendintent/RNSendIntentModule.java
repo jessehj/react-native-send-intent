@@ -1,6 +1,7 @@
 package com.burnweb.rnsendintent;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.app.DownloadManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -833,23 +834,55 @@ public class RNSendIntentModule extends ReactContextBaseJavaModule {
         }
     }
 
+//     @ReactMethod
+//     public void openAppWithUri(String intentUri, ReadableMap extras, final Promise promise) {
+//         try {
+//             Intent intent = Intent.parseUri(intentUri, Intent.URI_INTENT_SCHEME);
+//             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//             Intent existPackage = this.reactContext.getPackageManager().getLaunchIntentForPackage(intent.getPackage());
+//             if (existPackage != null) {
+//                 this.reactContext.startActivity(intent);
+//             } else {
+//                 Intent marketIntent = new Intent(Intent.ACTION_VIEW);
+//                 marketIntent.setData(Uri.parse("market://details?id="+intent.getPackage()));
+//                 marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                 this.reactContext.startActivity(marketIntent);
+//             }
+//             promise.resolve(true);
+//         } catch (Exception e) {
+//             promise.resolve(false);
+//         }
+//     }
+
     @ReactMethod
     public void openAppWithUri(String intentUri, ReadableMap extras, final Promise promise) {
-        try {
-            Intent intent = Intent.parseUri(intentUri, Intent.URI_INTENT_SCHEME);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            Intent existPackage = this.reactContext.getPackageManager().getLaunchIntentForPackage(intent.getPackage());
-            if (existPackage != null) {
-                this.reactContext.startActivity(intent);
-            } else {
-                Intent marketIntent = new Intent(Intent.ACTION_VIEW);
-                marketIntent.setData(Uri.parse("market://details?id="+intent.getPackage()));
-                marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent marketIntent = new Intent(Intent.ACTION_VIEW);
+        if (intentUri.startsWith("intent://")) {
+            Intent intent = null;
+            try {
+                intent = Intent.parseUri(intentUri, Intent.URI_INTENT_SCHEME);
+                if (intent != null) {
+                    this.reactContext.startActivity(intent);
+                }
+                promise.resolve(true);
+            } catch(ActivityNotFoundException e) {
+                String packageName = intent.getPackage();
+                if (!packageName.equals("")) {
+                    marketIntent.setData(Uri.parse("market://details?id=" + packageName));
+                    this.reactContext.startActivity(marketIntent);
+                }
+                promise.resolve(true);
+            } catch (Exception e) {
+                promise.resolve(false);
+            }
+        } else if (intentUri.startsWith("https://play.google.com/store/apps/details?id=") || intentUri.startsWith("market://details?id=")) {
+            Uri uri = Uri.parse(intentUri);
+            String packageName = uri.getQueryParameter("id");
+            if (packageName != null && !packageName.equals("")) {
+                marketIntent.setData(Uri.parse("market://details?id=" + packageName));
                 this.reactContext.startActivity(marketIntent);
             }
             promise.resolve(true);
-        } catch (Exception e) {
-            promise.resolve(false);
         }
     }
 

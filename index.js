@@ -2,7 +2,7 @@
  * @providesModule SendIntentAndroid
  */
 
-var { Platform, NativeModules } = require("react-native");
+var {Platform, NativeModules} = require("react-native");
 var RNSendIntentAndroid = NativeModules.SendIntentAndroid || {};
 
 var SendIntentAndroid = {
@@ -105,8 +105,8 @@ var SendIntentAndroid = {
     openFileChooser(options, title) {
         return RNSendIntentAndroid.openFileChooser(options, title);
     },
-    openFilePicker({ type = "*/*", title = "Choose File" }, callback) {
-        return RNSendIntentAndroid.openFilePicker({ type, title }, callback);
+    openFilePicker({type = "*/*", title = "Choose File"}, callback) {
+        return RNSendIntentAndroid.openFilePicker({type, title}, callback);
     },
     openEmailApp() {
         RNSendIntentAndroid.openEmailApp();
