@@ -864,17 +864,17 @@ public class RNSendIntentModule extends ReactContextBaseJavaModule {
                 if (intent != null) {
                     this.reactContext.startActivity(intent);
                 }
-                promise.resolve(true);
             } catch(ActivityNotFoundException e) {
                 String packageName = intent.getPackage();
                 if (!packageName.equals("")) {
                     marketIntent.setData(Uri.parse("market://details?id=" + packageName));
                     this.reactContext.startActivity(marketIntent);
                 }
-                promise.resolve(true);
             } catch (Exception e) {
-                promise.resolve(false);
+
             }
+            promise.resolve(true);
+            return;
         } else if (intentUri.startsWith("https://play.google.com/store/apps/details?id=") || intentUri.startsWith("market://details?id=")) {
             Uri uri = Uri.parse(intentUri);
             String packageName = uri.getQueryParameter("id");
@@ -883,7 +883,9 @@ public class RNSendIntentModule extends ReactContextBaseJavaModule {
                 this.reactContext.startActivity(marketIntent);
             }
             promise.resolve(true);
+            return;
         }
+        promise.resolve(false);
     }
 
     private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
